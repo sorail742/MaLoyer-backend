@@ -1,9 +1,17 @@
-# DarMeuble — Backend
+# MaLoyer — Backend
 
-API backend NestJS de DarMeuble, plateforme SaaS multi-tenant de gestion
-locative d'immeubles (immeubles, baux, paiements Djomy). Voir le dépôt
-`darmeuble-kit` (kit de démarrage, dépôt séparé) pour l'intégralité de la
-documentation de référence :
+API backend NestJS de **MaLoyer** (nom de code interne : DarMeuble),
+plateforme SaaS multi-tenant de gestion locative d'immeubles (immeubles,
+baux, paiements Djomy). Dépôt GitHub :
+`git@github.com:sorail742/MaLoyer-backend.git`.
+
+**`AGENTS.md`** — règles condensées pour tout agent IA (Antigravity,
+Cursor, Claude Code) travaillant sur ce dépôt ; à lire en premier.
+**`docs/adr/`** — décisions d'architecture de ce dépôt (accepté = déjà
+implémenté et vérifié, proposé = décision produit encore ouverte).
+
+Voir aussi le dépôt `darmeuble-kit` (kit de démarrage, dépôt séparé) pour
+l'intégralité de la documentation de référence :
 
 - `darmeuble-kit/docs/cahier-des-charges.md` — source de vérité fonctionnelle.
 - `darmeuble-kit/docs/backend/socle-backend.md` — décisions de socle
@@ -11,7 +19,8 @@ documentation de référence :
 - `darmeuble-kit/docs/backend/architecture.md`,
   `multi-tenant.md`, `paiements-djomy.md`, `soft-delete.md`,
   `coding-rules-backend.md`, `testing.md`, `workflow.md`.
-- `darmeuble-kit/docs/backend/adr/` — Architecture Decision Records.
+- `darmeuble-kit/docs/backend/adr/` — ADR sources (avant formalisation
+  dans `docs/adr/` de ce dépôt).
 
 ## État actuel — Phase 1 (Socle)
 
