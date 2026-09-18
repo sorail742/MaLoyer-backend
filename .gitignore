@@ -1,0 +1,31 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+build/
+
+# Environnement — jamais de valeur réelle commitée (docs/backend/coding-rules-backend.md)
+.env
+.env.*.local
+.env.local
+
+# Prisma — client généré (`prisma generate`), jamais commité. Voir
+# prisma/schema.prisma (generator client, output) et
+# src/prisma/prisma-client.ts.
+src/generated/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Tests
+coverage/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Husky (généré par `npm run prepare`, pas commité tel quel selon config locale)
