@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Décisions produit déjà tracées
+    url: https://github.com/sorail742/MaLoyer-backend/blob/main/docs/adr/README.md
+    about: Vérifier d'abord si la question est déjà une ADR "proposée" avant d'ouvrir un nouveau ticket.
