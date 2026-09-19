@@ -84,6 +84,27 @@ par statut.
   premier module (voir `auth.service.spec.ts` pour le gabarit de test de
   rotation/réutilisation de refresh token).
 
+## Choisir quel ticket travailler (priorité)
+
+Avant de commencer, vérifier sur GitHub Issues — jamais deviner depuis le
+nom du module :
+
+- **Respecter « Bloqué par #N »** — ne jamais démarrer un ticket dont un
+  bloqueur listé est encore ouvert.
+- **Parmi les tickets non bloqués, `prio::high` avant `medium` avant
+  `low`**, à égalité l'ordre des phases (`phase-0-cadrage` → … →
+  `phase-7-tests-lancement`). Ne pas sauter à une phase ultérieure pendant
+  qu'un ticket `prio::high` d'une phase antérieure est encore ouvert, sauf
+  demande explicite de l'utilisateur.
+- **Un ticket qui référence un ADR « Proposé »** ne se code pas en devinant
+  la réponse — implémentation derrière l'abstraction déjà posée
+  (`PaymentProvider`, `SmsSender`) jusqu'à ce que l'ADR passe à « Accepté ».
+- Un ticket `epic` ne se ferme jamais directement — le travail se fait sur
+  ses sous-issues.
+
+Discipline `prio::`/`effort::` inspirée de `smartsms-backend`
+(`docs/pilotage-equipe.md`).
+
 ## Git / GitHub
 
 - Branche `feature/*` depuis `develop`. **Jamais de push ni de merge sur

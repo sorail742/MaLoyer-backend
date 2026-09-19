@@ -96,6 +96,32 @@ existantes comme gabarit) :
   existera.
 - Confirmation de paiement concurrente dès le module `payments`.
 
+## Choisir quel ticket travailler (priorité)
+
+Avant de commencer, vérifier sur GitHub Issues — jamais deviner depuis le
+nom du module (un agent qui code un module non prioritaire pendant qu'un
+autre, plus prioritaire, reste ouvert produit du travail à refaire) :
+
+1. **Respecter « Bloqué par #N »** dans le corps du ticket — ne jamais
+   démarrer un ticket dont un bloqueur listé est encore ouvert
+   (`gh issue view <N> --json state,closed`).
+2. **Parmi les tickets non bloqués, `prio::high` avant `medium` avant
+   `low`**, à égalité respecter l'ordre des phases (`phase-0-cadrage` → … →
+   `phase-7-tests-lancement`). Ne pas sauter à une phase ultérieure pendant
+   qu'un ticket `prio::high` d'une phase antérieure est encore ouvert, sauf
+   demande explicite de l'utilisateur.
+3. **Un ticket qui référence un ADR « Proposé »** (`docs/adr/README.md`) ne
+   se code pas en devinant la réponse — soit c'est le ticket de décision
+   lui-même (label `decision-produit`), soit l'implémentation reste
+   derrière l'abstraction déjà posée (`PaymentProvider`, `SmsSender`)
+   jusqu'à ce que l'ADR passe à « Accepté ».
+4. Un ticket `epic` (label `epic`) ne se ferme jamais directement — le
+   travail se fait sur ses sous-issues, listées par sa barre de progression
+   GitHub.
+
+Discipline `prio::`/`effort::` inspirée de `smartsms-backend`
+(`docs/pilotage-equipe.md` : « un ticket entre étiqueté, ou n'entre pas »).
+
 ## Git / GitHub
 
 - Branche `feature/<issue>-<slug>` depuis `develop`, jamais depuis `main`.
