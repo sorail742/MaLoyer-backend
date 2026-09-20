@@ -28,6 +28,23 @@ generator client {
   // src/prisma/prisma-client.ts (réexport unique).
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+
+  // `moduleFormat` explicite (ADR-0015) : sans lui, le générateur
+  // auto-détecte le format en lisant le tsconfig le plus proche, et cette
+  // détection s'est avérée instable selon l'environnement d'exécution du
+  // générateur (a produit un `client.ts` avec `import.meta.url` — invalide
+  // en sortie CommonJS — sur Node 24.21.0/Linux en conteneur, mais pas sur
+  // Node 24.2.0/Windows en local, avec un schéma et un tsconfig identiques).
+  // Ce backend n'est pas un module ESM (aucun "type": "module" dans
+  // package.json) : fixer "cjs" retire toute ambiguïté.
+  moduleFormat = "cjs"
+
+  // `importFileExtension` explicite pour la même raison : fixer
+  // `moduleFormat` a fait basculer l'extension auto-détectée des imports
+  // relatifs internes de `.js` vers `.ts` (`require("./internal/class.ts")`,
+  // qui n'existe pas dans `dist/` — seul le `.js` compilé y est copié). `js`
+  // correspond à ce que `tsc`/`nest build` produit réellement.
+  importFileExtension = "js"
 }
 
 // Prisma 7 : l'URL de connexion ne se déclare plus ici mais dans

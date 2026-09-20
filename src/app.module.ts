@@ -9,6 +9,8 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
+import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -56,6 +58,8 @@ import { PrismaModule } from './prisma/prisma.module';
       },
     }),
     PrismaModule,
+    StorageModule,
+    RealtimeModule,
     OrganizationsModule,
     UsersModule,
     AuthModule,

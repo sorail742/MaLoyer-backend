@@ -27,6 +27,10 @@ construisant le socle (Phase 0/1, voir `README.md`).
 | [0011](0011-modele-tarification-abonnements.md) | Modèle de tarification des abonnements SaaS | Proposé — bloqué sur un choix produit |
 | [0012](0012-modeles-contrat-location-pdf.md) | Modèles de contrat de location (PDF) | Proposé — bloqué sur un livrable métier |
 | [0013](0013-permissions-fines-gestionnaire-delegue.md) | Permissions fines du gestionnaire délégué par immeuble | Proposé — bloqué sur un choix produit |
+| [0014](0014-localisation-guinee-afrique.md) | Conventions de localisation Guinée/Afrique | Accepté |
+| [0015](0015-conteneurisation-docker.md) | Conteneurisation Docker | Accepté |
+| [0016](0016-stockage-objet-minio.md) | Stockage objet : MinIO auto-hébergé | Accepté |
+| [0017](0017-temps-reel-websocket.md) | Temps réel : WebSocket (Socket.IO) | Accepté (infrastructure) |
 
 ## Quand créer un nouvel ADR
 

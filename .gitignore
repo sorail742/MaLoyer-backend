@@ -4,6 +4,7 @@ node_modules/
 # Build
 dist/
 build/
+*.tsbuildinfo
 
 # Environnement — jamais de valeur réelle commitée (docs/backend/coding-rules-backend.md)
 .env

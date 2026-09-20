@@ -74,6 +74,24 @@ par statut.
   (`@ApiProperty`/`@ApiPropertyOptional`), route protégée avec
   `@ApiBearerAuth()`.
 
+## Contexte Guinée/Afrique, stockage, temps réel
+
+- **Localisation (ADR-0014)** : devise `GNF` exclusivement, téléphone
+  validé `@IsPhoneNumber('GN')` (jamais sans région), constantes dans
+  `src/common/constants/locale.ts`. Adresse en texte libre, jamais de
+  validation de code postal.
+- **Fichiers → `STORAGE_PROVIDER` (ADR-0016, MinIO auto-hébergé)**, jamais
+  le SDK `minio` directement dans un module métier. URL signée à durée
+  limitée, jamais un objet public.
+- **Événement temps réel → `RealtimeService.emitToOrganization(...)`
+  (ADR-0017)**, jamais `RealtimeGateway` injecté ailleurs. Aucun événement
+  métier n'est défini par l'infrastructure elle-même — chaque module
+  consommateur définit les siens.
+- **Docker (ADR-0015)** : `docker compose up -d postgres minio` pour
+  l'infra locale, `Dockerfile` en deux étapes (`build`/`runtime`),
+  migrations appliquées au démarrage du conteneur
+  (`docker-entrypoint.sh`), jamais dans l'image elle-même.
+
 ## Tests
 
 - Tout changement de logique métier est accompagné de tests, y compris en

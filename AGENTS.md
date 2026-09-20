@@ -24,10 +24,15 @@ npm run test:e2e         # Jest e2e (test/)
 npm run build             # nest build
 npm run prisma:migrate    # migration locale (nécessite PostgreSQL)
 npm run prisma:seed        # crée le premier compte super_admin
+
+docker compose up -d postgres minio   # infra locale (ADR-0015/0016), backend sur l'hôte
+docker compose up --build             # backend aussi en conteneur
 ```
 
 Node exact requis : voir `.nvmrc`. Un seul gestionnaire de paquets (`npm`)
-— jamais de `yarn.lock`/`pnpm-lock.yaml` en parallèle.
+— jamais de `yarn.lock`/`pnpm-lock.yaml` en parallèle. (`darmeuble-frontend`
+utilise `pnpm` — décision propre à ce dépôt, voir son `docs/adr/0003-*.md`,
+ne pas aligner les deux sans demande explicite.)
 
 ## Ce qui ne se discute pas
 
@@ -80,6 +85,16 @@ Node exact requis : voir `.nvmrc`. Un seul gestionnaire de paquets (`npm`)
 - **Swagger** — tout nouveau DTO naît avec ses décorateurs
   (`@ApiProperty`/`@ApiPropertyOptional`), route protégée avec
   `@ApiBearerAuth()`.
+- **Contexte Guinée/Afrique (ADR-0014)** — devise `GNF` exclusivement,
+  téléphone validé `@IsPhoneNumber('GN')` (jamais sans région), constantes
+  dans `src/common/constants/locale.ts`. Adresse en texte libre, jamais de
+  validation de code postal.
+- **Fichiers → `STORAGE_PROVIDER` (ADR-0016)**, jamais le SDK `minio`
+  directement dans un module métier. URL signée à durée limitée, jamais un
+  objet public.
+- **Événement temps réel → `RealtimeService.emitToOrganization(...)`
+  (ADR-0017)**, jamais `RealtimeGateway`/`@WebSocketServer()` injecté
+  ailleurs.
 
 ## Tests
 

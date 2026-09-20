@@ -1,0 +1,66 @@
+# Environnement de développement local — ADR-0015 (Docker) et ADR-0016
+# (MinIO). Identifiants ci-dessous valables uniquement en local, jamais en
+# production (voir docs/backend/coding-rules-backend.md du kit).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: maloyer
+      POSTGRES_PASSWORD: maloyer_dev_only
+      POSTGRES_DB: maloyer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maloyer"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Distribué par MinIO via quay.io, pas Docker Hub — `minio/minio` n'y est
+  # plus publié pour les versions récentes (vérifié le 2026-09-19, voir
+  # ADR-0016).
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: maloyer
+      MINIO_ROOT_PASSWORD: maloyer_dev_only
+    ports:
+      - "9000:9000" # API S3
+      - "9001:9001" # Console web
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://maloyer:maloyer_dev_only@postgres:5432/maloyer
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: "9000"
+      MINIO_USE_SSL: "false"
+      MINIO_ACCESS_KEY: maloyer
+      MINIO_SECRET_KEY: maloyer_dev_only
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  minio_data:

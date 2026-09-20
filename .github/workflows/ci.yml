@@ -97,6 +97,15 @@ jobs:
       # dérivé de CI_PIPELINE_ID/CI_COMMIT_SHA) en attendant un vrai secret
       # d'environnement de test.
       JWT_ACCESS_SECRET: ci-only-${{ github.run_id }}-${{ github.sha }}
+      # StorageModule (ADR-0016) valide ces variables au boot mais ne se
+      # connecte à MinIO qu'au premier upload réel — aucun test e2e n'en
+      # fait encore, donc pas de service MinIO dans ce job pour l'instant
+      # (à ajouter avec le premier test qui exerce réellement un upload).
+      MINIO_ENDPOINT: localhost
+      MINIO_PORT: "9000"
+      MINIO_USE_SSL: "false"
+      MINIO_ACCESS_KEY: ci-only
+      MINIO_SECRET_KEY: ci-only-password
       NODE_ENV: test
     steps:
       - uses: actions/checkout@v4

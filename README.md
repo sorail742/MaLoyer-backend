@@ -52,6 +52,15 @@ Implémenté, conformément à l'ordre de construction de
   `MockPaymentProvider`, prêts pour la Phase 3 mais **non encore câblés**
   dans `AppModule` (pas de `PaymentsModule` avant que `leases`/`payments`
   existent — voir ADR-0003 : pas de généralisation avant un appelant réel).
+- **`storage`** — `StorageProvider` (interface) et `MinioStorageProvider`
+  (ADR-0016), câblés dans `AppModule` (contrairement à `payments`, ce n'est
+  pas une décision en attente). Aucun module métier ne l'utilise encore.
+- **`realtime`** — `RealtimeGateway`/`RealtimeService` (Socket.IO,
+  ADR-0017), connexion authentifiée + isolation par room organisation,
+  câblés dans `AppModule`. Aucun événement métier défini avant le module
+  `notifications` (Phase 5).
+- **Docker** (ADR-0015) — `Dockerfile` (image de production) et
+  `docker-compose.yml` (Postgres + MinIO + backend, développement local).
 
 **Non implémenté** (phases suivantes du cahier des charges §10) :
 `buildings`, `units`, `tenants` (fiches locataires), `leases`, `payments`
@@ -85,11 +94,16 @@ eux-mêmes). Écarts constatés et corrigés :
 ```bash
 nvm use            # voir .nvmrc
 cp .env.example .env
-# remplir DATABASE_URL, JWT_ACCESS_SECRET (valeur aléatoire longue) au minimum
+# remplir DATABASE_URL, JWT_ACCESS_SECRET, MINIO_ACCESS_KEY/MINIO_SECRET_KEY
+# (valeurs aléatoires longues) au minimum
+docker compose up -d postgres minio   # infra locale (ADR-0015/0016)
 npm install         # postinstall: prisma generate
-npm run prisma:migrate   # nécessite une base PostgreSQL locale
+npm run prisma:migrate
 npm run start:dev
 ```
+
+`docker compose up --build` fait aussi tourner le backend en conteneur
+(sans `npm install`/`start:dev` sur l'hôte).
 
 `npm run prisma:seed` crée le premier compte `super_admin`
 (`SEED_SUPER_ADMIN_EMAIL` / `SEED_SUPER_ADMIN_PASSWORD` dans `.env`) — à
