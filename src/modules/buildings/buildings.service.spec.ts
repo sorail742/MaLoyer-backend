@@ -1,11 +1,17 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Building } from '../../prisma/prisma-client';
+import { PaginatedResult } from '../../common/http/response.types';
 import { IBuildingsRepository } from './repositories/buildings-repository.interface';
 import { BuildingsService } from './buildings.service';
-import { PaginatedResult } from '../../common/http/response.types';
 
-function buildBuilding(overrides: Partial<Building> = {}): Building {
-  return {
+// Utilitaire pour simuler l'interface du repo sans s'occuper de PrismaService.
+type Mocked<T> = { [P in keyof T]: jest.Mock };
+
+describe('BuildingsService', () => {
+  let service: BuildingsService;
+  let repository: Mocked<IBuildingsRepository>;
+
+  const mockBuilding: Building = {
     id: 'bld-1',
     organizationId: 'org-1',
     name: 'Résidence Les Manguiers',
@@ -13,32 +19,30 @@ function buildBuilding(overrides: Partial<Building> = {}): Building {
     city: 'Conakry',
     floorsCount: 5,
     photos: [],
+    createdAt: new Date('2026-01-01T00:00:00Z'),
+    updatedAt: new Date('2026-01-01T00:00:00Z'),
     deletedAt: null,
-    createdAt: new Date('2026-01-01T00:00:00.000Z'),
-    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-    ...overrides,
   };
-}
 
-function buildPaginated(items: Building[]): PaginatedResult<Building> {
-  return { items, total: items.length, page: 1, limit: 20 };
-}
+  const buildBuilding = (overrides?: Partial<Building>): Building => ({
+    ...mockBuilding,
+    ...overrides,
+  });
 
-describe('BuildingsService', () => {
-  let repository: jest.Mocked<IBuildingsRepository>;
-  let service: BuildingsService;
+  const buildPaginated = (items: Building[]): PaginatedResult<Building> => ({
+    items,
+    total: items.length,
+    page: 1,
+    limit: 20,
+  });
 
   beforeEach(() => {
     repository = {
       findAllByOrganization: jest.fn(),
-      findAllByManager: jest.fn(),
       findById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       archive: jest.fn(),
-      assignManager: jest.fn(),
-      removeManager: jest.fn(),
-      isManager: jest.fn(),
     };
     service = new BuildingsService(repository);
   });
@@ -54,7 +58,7 @@ describe('BuildingsService', () => {
         buildPaginated(org1Buildings),
       );
 
-      const result = await service.list('org-1', 'owner', 'user-1', {
+      const result = await service.list('org-1', {
         page: 1,
         limit: 20,
       });
@@ -72,47 +76,6 @@ describe('BuildingsService', () => {
     });
   });
 
-  // ── Portée du manager (ADR-0013) ────────────────────────────────────────────
-
-  describe('list — portée manager', () => {
-    it('un manager ne voit que ses immeubles assignés', async () => {
-      const assigned = [buildBuilding({ id: 'bld-1' })];
-      repository.findAllByManager.mockResolvedValue(buildPaginated(assigned));
-
-      const result = await service.list('org-1', 'manager', 'mgr-1', {
-        page: 1,
-        limit: 20,
-      });
-
-      expect(repository.findAllByManager).toHaveBeenCalledWith(
-        'org-1',
-        'mgr-1',
-        { page: 1, limit: 20 },
-      );
-      expect(repository.findAllByOrganization).not.toHaveBeenCalled();
-      expect(result.items).toEqual(assigned);
-    });
-
-    it('un manager ne peut pas accéder à un immeuble qui ne lui est pas assigné', async () => {
-      repository.findById.mockResolvedValue(buildBuilding({ id: 'bld-2' }));
-      repository.isManager.mockResolvedValue(false);
-
-      await expect(
-        service.findByIdOrFail('bld-2', 'org-1', 'manager', 'mgr-1'),
-      ).rejects.toBeInstanceOf(ForbiddenException);
-    });
-
-    it('un manager peut accéder à un immeuble qui lui est assigné', async () => {
-      const building = buildBuilding({ id: 'bld-1' });
-      repository.findById.mockResolvedValue(building);
-      repository.isManager.mockResolvedValue(true);
-
-      await expect(
-        service.findByIdOrFail('bld-1', 'org-1', 'manager', 'mgr-1'),
-      ).resolves.toEqual(building);
-    });
-  });
-
   // ── findByIdOrFail ──────────────────────────────────────────────────────────
 
   describe('findByIdOrFail', () => {
@@ -120,7 +83,7 @@ describe('BuildingsService', () => {
       repository.findById.mockResolvedValue(null);
 
       await expect(
-        service.findByIdOrFail('inconnu', 'org-1', 'owner', 'user-1'),
+        service.findByIdOrFail('inconnu', 'org-1'),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
@@ -128,9 +91,9 @@ describe('BuildingsService', () => {
       const building = buildBuilding();
       repository.findById.mockResolvedValue(building);
 
-      await expect(
-        service.findByIdOrFail('bld-1', 'org-1', 'owner', 'user-1'),
-      ).resolves.toEqual(building);
+      await expect(service.findByIdOrFail('bld-1', 'org-1')).resolves.toEqual(
+        building,
+      );
     });
   });
 

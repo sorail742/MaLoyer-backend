@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PaginatedResult } from '../../../common/http/response.types';
 import { Building } from '../../../prisma/prisma-client';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -33,36 +33,6 @@ export class PrismaBuildingsRepository implements IBuildingsRepository {
       }),
       this.prisma.building.count({
         where: { organizationId, deletedAt: null },
-      }),
-    ]);
-    return { items, total, page: pagination.page, limit: pagination.limit };
-  }
-
-  async findAllByManager(
-    organizationId: string,
-    userId: string,
-    pagination: { page: number; limit: number },
-  ): Promise<PaginatedResult<Building>> {
-    // Portée intra-organisation du gestionnaire délégué (ADR-0013) :
-    // ne renvoie que les immeubles dont l'utilisateur est manager, dans
-    // l'organisation courante.
-    const [items, total] = await Promise.all([
-      this.prisma.building.findMany({
-        where: {
-          organizationId,
-          deletedAt: null,
-          managers: { some: { userId } },
-        },
-        skip: (pagination.page - 1) * pagination.limit,
-        take: pagination.limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.building.count({
-        where: {
-          organizationId,
-          deletedAt: null,
-          managers: { some: { userId } },
-        },
       }),
     ]);
     return { items, total, page: pagination.page, limit: pagination.limit };
@@ -117,39 +87,5 @@ export class PrismaBuildingsRepository implements IBuildingsRepository {
       where: { id, organizationId },
       data: { deletedAt: new Date() },
     });
-  }
-
-  async assignManager(buildingId: string, userId: string): Promise<void> {
-    try {
-      await this.prisma.buildingManager.create({
-        data: { buildingId, userId },
-      });
-    } catch (e: unknown) {
-      // Contrainte unique [buildingId, userId] — déjà assigné, pas d'erreur
-      // métier à remonter.
-      const isUniqueConstraint =
-        typeof e === 'object' &&
-        e !== null &&
-        'code' in e &&
-        e.code === 'P2002';
-      if (!isUniqueConstraint) {
-        throw new ConflictException(
-          'Ce gestionnaire est déjà assigné à cet immeuble',
-        );
-      }
-    }
-  }
-
-  async removeManager(buildingId: string, userId: string): Promise<void> {
-    await this.prisma.buildingManager.deleteMany({
-      where: { buildingId, userId },
-    });
-  }
-
-  async isManager(buildingId: string, userId: string): Promise<boolean> {
-    const count = await this.prisma.buildingManager.count({
-      where: { buildingId, userId },
-    });
-    return count > 0;
   }
 }

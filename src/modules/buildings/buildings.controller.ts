@@ -59,9 +59,7 @@ export class BuildingsController {
     }
     const result = await this.buildingsService.list(
       user.organizationId,
-      user.role,
-      user.userId,
-      { page: pagination.page, limit: pagination.limit },
+      pagination,
     );
     return {
       ...result,
@@ -83,8 +81,6 @@ export class BuildingsController {
     const building = await this.buildingsService.findByIdOrFail(
       id,
       user.organizationId,
-      user.role,
-      user.userId,
     );
     return BuildingResponseDto.fromEntity(building);
   }
@@ -154,41 +150,5 @@ export class BuildingsController {
       );
     }
     await this.buildingsService.archive(id, user.organizationId);
-  }
-
-  // ── Gestion des gestionnaires délégués (ADR-0013) ──────────────────────────
-
-  @Roles('owner')
-  @Post(':id/managers/:userId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse({ description: "Gestionnaire assigné à l'immeuble" })
-  async assignManager(
-    @CurrentUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-    @Param('userId') userId: string,
-  ): Promise<void> {
-    if (!user.organizationId) {
-      throw new Error(
-        'TenantScopeGuard aurait dû rejeter cette requête avant le controller',
-      );
-    }
-    await this.buildingsService.assignManager(id, user.organizationId, userId);
-  }
-
-  @Roles('owner')
-  @Delete(':id/managers/:userId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse({ description: "Gestionnaire retiré de l'immeuble" })
-  async removeManager(
-    @CurrentUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-    @Param('userId') userId: string,
-  ): Promise<void> {
-    if (!user.organizationId) {
-      throw new Error(
-        'TenantScopeGuard aurait dû rejeter cette requête avant le controller',
-      );
-    }
-    await this.buildingsService.removeManager(id, user.organizationId, userId);
   }
 }
