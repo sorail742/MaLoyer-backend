@@ -104,6 +104,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       'max-lines': 'off',
+      'max-lines-per-function': 'off',
     },
   },
   {
