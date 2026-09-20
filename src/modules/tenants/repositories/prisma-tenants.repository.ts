@@ -56,49 +56,30 @@ export class PrismaTenantsRepository implements ITenantsRepository {
     organizationId: string,
     data: UpdateTenantData,
   ): Promise<Tenant> {
+    // Construction dynamique du payload pour éviter la complexité cognitive
+    // et les ternaires imbriquées
+    const payload = {} as Parameters<
+      typeof this.prisma.tenant.update
+    >[0]['data'];
+
+    if (data.fullName !== undefined) payload.fullName = data.fullName;
+    if (data.phone !== undefined) payload.phone = data.phone;
+    if (data.email !== undefined) payload.email = data.email;
+    if (data.idDocumentRef !== undefined)
+      payload.idDocumentRef = data.idDocumentRef;
+    if (data.photoRef !== undefined) payload.photoRef = data.photoRef;
+    if (data.emergencyContactName !== undefined)
+      payload.emergencyContactName = data.emergencyContactName;
+    if (data.emergencyContactPhone !== undefined)
+      payload.emergencyContactPhone = data.emergencyContactPhone;
+    if (data.isBlacklisted !== undefined)
+      payload.isBlacklisted = data.isBlacklisted;
+    if (data.blacklistReason !== undefined)
+      payload.blacklistReason = data.blacklistReason;
+
     return this.prisma.tenant.update({
       where: { id, organizationId },
-      data: {
-        ...(data.fullName !== undefined && { fullName: data.fullName }),
-        ...(data.phone === null
-          ? { phone: null }
-          : data.phone !== undefined
-            ? { phone: data.phone }
-            : {}),
-        ...(data.email === null
-          ? { email: null }
-          : data.email !== undefined
-            ? { email: data.email }
-            : {}),
-        ...(data.idDocumentRef === null
-          ? { idDocumentRef: null }
-          : data.idDocumentRef !== undefined
-            ? { idDocumentRef: data.idDocumentRef }
-            : {}),
-        ...(data.photoRef === null
-          ? { photoRef: null }
-          : data.photoRef !== undefined
-            ? { photoRef: data.photoRef }
-            : {}),
-        ...(data.emergencyContactName === null
-          ? { emergencyContactName: null }
-          : data.emergencyContactName !== undefined
-            ? { emergencyContactName: data.emergencyContactName }
-            : {}),
-        ...(data.emergencyContactPhone === null
-          ? { emergencyContactPhone: null }
-          : data.emergencyContactPhone !== undefined
-            ? { emergencyContactPhone: data.emergencyContactPhone }
-            : {}),
-        ...(data.isBlacklisted !== undefined && {
-          isBlacklisted: data.isBlacklisted,
-        }),
-        ...(data.blacklistReason === null
-          ? { blacklistReason: null }
-          : data.blacklistReason !== undefined
-            ? { blacklistReason: data.blacklistReason }
-            : {}),
-      },
+      data: payload,
     });
   }
 

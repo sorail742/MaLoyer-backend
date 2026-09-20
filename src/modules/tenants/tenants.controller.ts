@@ -88,21 +88,21 @@ export class TenantsController {
         'TenantScopeGuard aurait dû rejeter cette requête avant le controller',
       );
     }
-    const tenant = await this.tenantsService.create(user.organizationId, {
-      fullName: dto.fullName,
-      ...(dto.phone !== undefined && { phone: dto.phone }),
-      ...(dto.email !== undefined && { email: dto.email }),
-      ...(dto.idDocumentRef !== undefined && {
-        idDocumentRef: dto.idDocumentRef,
-      }),
-      ...(dto.photoRef !== undefined && { photoRef: dto.photoRef }),
-      ...(dto.emergencyContactName !== undefined && {
-        emergencyContactName: dto.emergencyContactName,
-      }),
-      ...(dto.emergencyContactPhone !== undefined && {
-        emergencyContactPhone: dto.emergencyContactPhone,
-      }),
-    });
+    const payload: CreateTenantDto = { fullName: dto.fullName };
+    if (dto.phone !== undefined) payload.phone = dto.phone;
+    if (dto.email !== undefined) payload.email = dto.email;
+    if (dto.idDocumentRef !== undefined)
+      payload.idDocumentRef = dto.idDocumentRef;
+    if (dto.photoRef !== undefined) payload.photoRef = dto.photoRef;
+    if (dto.emergencyContactName !== undefined)
+      payload.emergencyContactName = dto.emergencyContactName;
+    if (dto.emergencyContactPhone !== undefined)
+      payload.emergencyContactPhone = dto.emergencyContactPhone;
+
+    const tenant = await this.tenantsService.create(
+      user.organizationId,
+      payload,
+    );
     return TenantResponseDto.fromEntity(tenant);
   }
 
@@ -120,27 +120,27 @@ export class TenantsController {
         'TenantScopeGuard aurait dû rejeter cette requête avant le controller',
       );
     }
-    const tenant = await this.tenantsService.update(id, user.organizationId, {
-      ...(dto.fullName !== undefined && { fullName: dto.fullName }),
-      ...(dto.phone !== undefined && { phone: dto.phone }),
-      ...(dto.email !== undefined && { email: dto.email }),
-      ...(dto.idDocumentRef !== undefined && {
-        idDocumentRef: dto.idDocumentRef,
-      }),
-      ...(dto.photoRef !== undefined && { photoRef: dto.photoRef }),
-      ...(dto.emergencyContactName !== undefined && {
-        emergencyContactName: dto.emergencyContactName,
-      }),
-      ...(dto.emergencyContactPhone !== undefined && {
-        emergencyContactPhone: dto.emergencyContactPhone,
-      }),
-      ...(dto.isBlacklisted !== undefined && {
-        isBlacklisted: dto.isBlacklisted,
-      }),
-      ...(dto.blacklistReason !== undefined && {
-        blacklistReason: dto.blacklistReason,
-      }),
-    });
+    const payload: UpdateTenantDto = {};
+    if (dto.fullName !== undefined) payload.fullName = dto.fullName;
+    if (dto.phone !== undefined) payload.phone = dto.phone;
+    if (dto.email !== undefined) payload.email = dto.email;
+    if (dto.idDocumentRef !== undefined)
+      payload.idDocumentRef = dto.idDocumentRef;
+    if (dto.photoRef !== undefined) payload.photoRef = dto.photoRef;
+    if (dto.emergencyContactName !== undefined)
+      payload.emergencyContactName = dto.emergencyContactName;
+    if (dto.emergencyContactPhone !== undefined)
+      payload.emergencyContactPhone = dto.emergencyContactPhone;
+    if (dto.isBlacklisted !== undefined)
+      payload.isBlacklisted = dto.isBlacklisted;
+    if (dto.blacklistReason !== undefined)
+      payload.blacklistReason = dto.blacklistReason;
+
+    const tenant = await this.tenantsService.update(
+      id,
+      user.organizationId,
+      payload,
+    );
     return TenantResponseDto.fromEntity(tenant);
   }
 
