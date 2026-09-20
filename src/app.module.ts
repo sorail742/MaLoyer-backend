@@ -12,6 +12,7 @@ import { BuildingsModule } from './modules/buildings/buildings.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { StorageModule } from './modules/storage/storage.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -65,6 +66,7 @@ import { PrismaModule } from './prisma/prisma.module';
     UsersModule,
     AuthModule,
     BuildingsModule,
+    TenantsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
