@@ -8,6 +8,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthModule } from './modules/auth/auth.module';
+import { BuildingsModule } from './modules/buildings/buildings.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { StorageModule } from './modules/storage/storage.module';
@@ -63,6 +64,7 @@ import { PrismaModule } from './prisma/prisma.module';
     OrganizationsModule,
     UsersModule,
     AuthModule,
+    BuildingsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
